@@ -1,0 +1,58 @@
+from dataclasses import dataclass
+from pathlib import Path
+from typing import List, Dict, Optional
+
+
+@dataclass(frozen=True)
+class MatchConfig:
+        input_path: "data/data_for_regression_GB.xlsx"
+        output_dir: "output"
+
+        treat_col: str = "has_green_bond"
+        year_col: str = "deal_year"
+
+        exact_cols: List[str] = None
+
+        distance_cols: List[str] = None
+
+        calipers: Optional[Dict[str, float]] = None
+
+
+        k_neighbors: int = 1
+        replace: bool = False
+
+
+        n_perm: int = 20000
+        seed: int = 1
+
+        esg_col: str = ""
+        div_col: str = ""
+
+
+        def __post_init__(self):
+                object.__setattr__(self, "exact_cols", self.exact_cols or ["cross_nation", "cross_industry", "IG"])
+                object.__setattr__(self, "distance_cols", self.distance_cols or ["relative_total_assets", "log_deal_value"])
+                object.__setattr__(self, "calipers", self.calipers or {"relative_total_assets": 0.5, "log_deal_value": 1})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TREAT_COL = "has_green_bond"
+YEAR_COL = "deal_year"
+BIN_EXACT = ["cross_nation", "cross_industry", "IG"]
+SIZE_COL = "relative_total_assets"
+
+DEALVALUE_COL = "log_deal_value"
+
+ESG_COL = ["mean_ESG", "mean_E", "mean_S", "mean_G"]
+DIV_COL = ["log_SD_ESG", "log_SD_E", "log_SD_S", "log_SD_G", "CV_ESG", "CV_E", "CV_S", "CV_G"]
