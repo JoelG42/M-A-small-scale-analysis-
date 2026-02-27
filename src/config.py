@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Literal
 
 
 @dataclass(frozen=True)
 class MatchConfig:
+
         input_path: "data/data_for_regression_GB.xlsx"
         output_dir: "output"
 
@@ -12,15 +13,12 @@ class MatchConfig:
         year_col: str = "deal_year"
 
         exact_cols: List[str] = None
-
         distance_cols: List[str] = None
-
         calipers: Optional[Dict[str, float]] = None
-
-
         k_neighbors: int = 1
         replace: bool = False
 
+        match_method: Literal["exact", "knn"] = "knn"
 
         n_perm: int = 20000
         seed: int = 1
@@ -31,8 +29,8 @@ class MatchConfig:
 
         def __post_init__(self):
                 object.__setattr__(self, "exact_cols", self.exact_cols or ["cross_nation", "cross_industry", "IG"])
-                object.__setattr__(self, "distance_cols", self.distance_cols or ["relative_total_assets", "log_deal_value"])
-                object.__setattr__(self, "calipers", self.calipers or {"relative_total_assets": 0.5, "log_deal_value": 1})
+                object.__setattr__(self, "distance_cols", self.distance_cols or ["relative_total_assets"])
+                object.__setattr__(self, "calipers", self.calipers or {"relative_total_assets": 0.5})
 
 
 

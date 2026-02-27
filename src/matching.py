@@ -95,3 +95,61 @@ def match_pairs(
 
     out = pd.concat([pairs.reset_index(drop=True), t_side, c_side], axis=1)
     return out
+
+
+
+def match_pairs_exact(
+    df: pd.DataFrame,
+    treat_col: str,
+    year_col: str,
+    exact_cols: List[str],
+    replace: bool = False,
+) -> pd.DataFrame:
+
+    needed = [treat_col, year_col] + exact_cols
+
+    d = df.dropna(subset=needed).copy()
+
+    treated = d[d[treat_col] == 1].copy()
+    controls = d[d[treat_col] == 0].copy()
+
+    if treated.empty:
+        raise ValueError("No treated units found in the dataframe")
+
+    if controls.empty:
+        raise ValueError("No control units found in the dataframe")
+
+
+    used_controls: set[int] = set()
+    matches: list[tuple[int, int]] = []
+
+
+    for t_idx, t_row in treated.iterrows():
+        mask = (controls[year_col] == t_row[year_col])
+        for c in exact_cols:
+            mask &= (controls[c] == t_row[c])
+
+        pool = controls[mask]
+        if not replace:
+            pool = pool[~pool.index.isin(used_controls)]
+
+        if pool.empty:
+            continue
+
+        c_idx = pool.index[0]
+        matches.append((t_idx, c_idx))
+        if not replace:
+            used_controls.add(c_idx)
+
+
+    pairs = pd.DataFrame(matches, columns=["treated_idx", "control_idx"])
+
+    if pairs.empty:
+        raise ValueError("No matches found under your exact constraints")
+
+    pairs["distance"] = 0.0
+
+    t_side = d.loc[pairs["treated_idx"]].add_prefix("t_").reset_index(drop=True)
+    c_side = d.loc[pairs["control_idx"]].add_prefix("c_").reset_index(drop=True)
+    out = pd.concat([pairs.reset_index(drop=True), t_side, c_side], axis=1)
+    return out

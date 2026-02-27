@@ -2,7 +2,7 @@ from pathlib import Path
 import pandas as pd
 
 from src.io import load_excel, ensure_columns, save_csv
-from src.matching import match_pairs
+from src.matching import match_pairs, match_pairs_exact
 from src.inference import permutation_test_pair_diffs
 from src.reporting import balance_table, add_pair_deltas
 from src.config import MatchConfig
@@ -22,16 +22,30 @@ def run_all(cfg: MatchConfig) -> None:
     ensure_columns(df, required)
 
 
-    pairs = match_pairs(
-        df=df,
-        treat_col=cfg.treat_col,
-        year_col=cfg.year_col,
-        exact_cols=cfg.exact_cols,
-        distance_cols=cfg.distance_cols,
-        calipers=cfg.calipers,
-        k_neighbors=cfg.k_neighbors,
-        replace=cfg.replace,
-    )
+
+    if cfg.match_method == "exact":
+        pairs = match_pairs_exact(
+            df=df,
+            treat_col=cfg.treat_col,
+            year_col=cfg.year_col,
+            exact_cols=cfg.exact_cols,
+            replace=cfg.replace,
+        )
+    elif cfg.match_method == "knn":
+        pairs = match_pairs(
+            df=df,
+            treat_col=cfg.treat_col,
+            year_col=cfg.year_col,
+            exact_cols=cfg.exact_cols,
+            distance_cols=cfg.distance_cols,
+            calipers=cfg.calipers,
+            k_neighbors=cfg.k_neighbors,
+            replace=cfg.replace,
+        )
+
+
+
+
 
     bal = balance_table(pairs, cfg.distance_cols)
     pairs2 = add_pair_deltas(pairs, cfg.esg_col, cfg.div_col)

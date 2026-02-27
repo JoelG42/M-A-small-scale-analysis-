@@ -14,6 +14,7 @@ def parse_args():
     # optional overrides
     p.add_argument("--k", default=1, type=int, help="Neighbors per treated (1 recommended)")
     p.add_argument("--replace", action="store_true", help="Allow control reuse")
+    p.add_argument("--match_method", choices=["exact", "knn"], default="exact", help="Matching method to use")
     p.add_argument("--n_perm", default=20000, type=int)
     p.add_argument("--seed", default=1, type=int)
     return p.parse_args()
@@ -28,6 +29,7 @@ def main():
         div_col=args.div_col,
         k_neighbors=args.k,
         replace=args.replace,
+        match_method=args.match_method,
         n_perm=args.n_perm,
         seed=args.seed,
     )
