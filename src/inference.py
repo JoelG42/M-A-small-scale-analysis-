@@ -21,7 +21,7 @@ def permutation_test_pair_diffs(deltas: np.ndarray, n_perm: int = 20000, seed: i
 
     return {
         "n_pairs": int(n),
-        "obs_mean": float(obs),
-        "p_value_two_sided": float(P_two),
+        "obs_mean": np.round(float(obs), 4),
+        "p_value_two_sided": np.round(float(P_two), 4),
     }
 

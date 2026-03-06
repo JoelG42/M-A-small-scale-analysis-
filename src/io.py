@@ -9,6 +9,10 @@ def load_excel(path: Path) -> pd.DataFrame:
         df = df.drop(columns=["Unnamed: 0"])
     return df
 
+def load_csv(path: Path) -> pd.DataFrame:
+    df = pd.read_csv(path)
+    return df
+
 
 
 def ensure_columns(df: pd.DataFrame, cols: list[str]) -> None:

@@ -6,8 +6,9 @@ from typing import List, Dict, Optional, Literal
 @dataclass(frozen=True)
 class MatchConfig:
 
-        input_path: "data/data_for_regression_GB.xlsx"
-        output_dir: "output"
+        input_path: str = "data/data_for_regression_GB.xlsx"
+        valuation_input_path: str = "outputs/matched_pairs.csv"
+        output_dir: str = "output"
 
         treat_col: str = "has_green_bond"
         year_col: str = "deal_year"
@@ -26,11 +27,15 @@ class MatchConfig:
         esg_col: str = ""
         div_col: str = ""
 
+        valuation_vars = ["log_deal_value", "premium_1d", "premium_1w", "premium_1m", "deal_to_ebitda", "deal_to_net_assets"]
+        pillars = ["ESG", "E", "S", "G"]
+        div_measures = ["SD_", "log_SD_", "CV_"]
+
 
         def __post_init__(self):
                 object.__setattr__(self, "exact_cols", self.exact_cols or ["cross_nation", "cross_industry", "IG"])
-                object.__setattr__(self, "distance_cols", self.distance_cols or ["relative_total_assets"])
-                object.__setattr__(self, "calipers", self.calipers or {"relative_total_assets": 0.5})
+                object.__setattr__(self, "distance_cols", self.distance_cols or ["target_total_assets"])
+                object.__setattr__(self, "calipers", self.calipers or {"target_total_assets": None})
 
 
 
